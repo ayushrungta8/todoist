@@ -9,7 +9,10 @@ function App() {
   const [sidebarVisible, setSidebarVisibility] = useState(true);
   const [projectArray, setProjectArray] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState();
-
+  const deleteProject = async (projectId) => {
+    await db.collection("projects").doc(projectId).delete();
+    await fetchData();
+  };
   const addProject = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -26,16 +29,16 @@ function App() {
     console.log(temp);
   };
 
+  const fetchData = async () => {
+    let docs = await db.collection("projects").orderBy("createdAt").get();
+    const temp = [];
+    docs.forEach((record) => {
+      temp.push({ ...record.data(), id: record.id });
+    });
+    setProjectArray(temp);
+    temp.length && setSelectedProjectId(temp[0].id);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      let docs = await db.collection("projects").orderBy("createdAt").get();
-      const temp = [];
-      docs.forEach((record) => {
-        temp.push({ ...record.data(), id: record.id });
-      });
-      setProjectArray(temp);
-      temp.length && setSelectedProjectId(temp[0].id);
-    };
     fetchData();
   }, []);
 
@@ -50,6 +53,7 @@ function App() {
             setProjectArray={setProjectArray}
             selectedProjectId={selectedProjectId}
             setSelectedProjectId={setSelectedProjectId}
+            onDelete={deleteProject}
           />
         )}
         <ListContainer

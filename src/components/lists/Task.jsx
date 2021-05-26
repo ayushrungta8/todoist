@@ -1,11 +1,15 @@
 import React from "react";
+import { IoCloseOutline } from "react-icons/io5";
 import styled from "styled-components";
 
-const ListItem = ({text,taskId}) => {
+const Task = ({ text, taskId, onDelete }) => {
   return (
     <Container>
-      <input type="radio" name="test145" id="1" />
-      <label htmlFor="1">{text}</label>
+      <input type="checkbox" name="test145" />
+      <label>{text}</label>
+      <div className="close-container" onClick={onDelete}>
+        <IoCloseOutline size="10" className="close" />
+      </div>
     </Container>
   );
 };
@@ -38,5 +42,23 @@ const Container = styled.div`
     box-shadow: 0 2px 4px 0 rgb(0 0 0 / 10%);
     cursor: pointer;
   }
+  .close {
+    color: red;
+  }
+  .close-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    /* width: 20px;
+    height:100%; */
+    margin-left: auto;
+    :hover {
+      background-color: #ee5e5e;
+      .close {
+        color: white;
+      }
+    }
+  }
 `;
-export default ListItem;
+export default Task;

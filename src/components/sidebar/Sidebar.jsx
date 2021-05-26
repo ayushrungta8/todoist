@@ -9,6 +9,7 @@ const Sidebar = ({
   // setprojectArray,
   selectedProjectId,
   setSelectedProjectId,
+  onDelete,
 }) => {
   return (
     <SidebarContainer>
@@ -21,6 +22,7 @@ const Sidebar = ({
           setSelectedProjectId={setSelectedProjectId}
           id={eachItem.id}
           selectedProjectId={selectedProjectId === eachItem.id}
+          onDelete={() => onDelete(eachItem.id)}
         />
       ))}
 

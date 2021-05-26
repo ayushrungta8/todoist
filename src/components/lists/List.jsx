@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { IoAddOutline, IoEllipsisHorizontalOutline } from "react-icons/io5";
+import {
+  IoAddOutline,
+  IoCloseOutline,
+  IoEllipsisHorizontalOutline,
+} from "react-icons/io5";
 import { FaLightbulb } from "react-icons/fa";
 import styled from "styled-components";
-import ListItem from "./ListItem";
+import Task from "./Task";
 import db from "../../firebase";
 
-const List = ({ text, selectedProjectId, listId }) => {
+const List = ({ text, selectedProjectId, listId, onDelete }) => {
   const [taskArray, setTaskArray] = useState([]);
+  const deleteTask = async (taskId) => {
+    await db.collection("tasks").doc(taskId).delete();
+    await fetchData(listId);
+  };
+
   const addTask = (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -22,22 +31,21 @@ const List = ({ text, selectedProjectId, listId }) => {
     setTaskArray(temp);
     e.target.reset();
   };
+  const fetchData = async (listId) => {
+    let docs = await db
+      .collection("tasks")
+      .orderBy("createdAt")
+      .where("listId", "==", listId)
+      .get();
 
+    const temp = [];
+    docs.forEach((record) => {
+      temp.push({ ...record.data(), id: record.id });
+    });
+    setTaskArray(temp);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      let docs = await db
-        .collection("tasks")
-        .orderBy("createdAt")
-        .where("listId", "==", listId)
-        .get();
-
-      const temp = [];
-      docs.forEach((record) => {
-        temp.push({ ...record.data(), id: record.id });
-      });
-      setTaskArray(temp);
-    };
-    fetchData();
+    fetchData(listId);
   }, [listId]);
 
   return (
@@ -47,14 +55,22 @@ const List = ({ text, selectedProjectId, listId }) => {
         <FaLightbulb className="categoryIcon" />
         <h6 className="counter">2</h6>
         <IoEllipsisHorizontalOutline className="icon" />
+        <div className="close-container" onClick={onDelete}>
+          <IoCloseOutline size="10" className="close" />
+        </div>
       </ListHeading>
 
       {taskArray.map((eachItem) => (
-        <ListItem key={eachItem.id} text={eachItem.text} taskId={eachItem.id} />
+        <Task
+          key={eachItem.id}
+          text={eachItem.text}
+          taskId={eachItem.id}
+          onDelete={async () => await deleteTask(eachItem.id)}
+        />
       ))}
 
       <AddTask>
-        <form onSubmit={(e) => addTask(e)} className="add-list">
+        <form onSubmit={(e) => addTask(e)} className="add-task">
           <button>
             <IoAddOutline className="add-icon" size="20" />
           </button>
@@ -66,26 +82,29 @@ const List = ({ text, selectedProjectId, listId }) => {
 };
 
 const AddTask = styled.div`
-  padding: 20px;
+  /* padding: 20px; */
   display: flex;
+  /* border: 1px solid red; */
 
-  .add-list {
-    margin: 10px;
+  .add-task {
+    margin: 0px;
+    margin-top: 5px;
     height: 30px;
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     cursor: pointer;
-    background-color: #e9e5e5;
+    background-color: #ffffff;
 
     button {
       border: none;
-      border-right: 1px solid #b4b2b2;
+      /* border-right: 1px solid #b4b2b2; */
       background: none;
       margin: none;
       padding: 5px;
       display: flex;
       cursor: pointer;
+      color: #dc4d3d;
     }
 
     input {
@@ -117,10 +136,30 @@ const ListHeading = styled.div`
   }
   .icon {
     margin-left: auto;
+    margin-right: 0;
   }
   .categoryIcon {
     margin-left: 8px;
     color: orange;
+  }
+  .close {
+    color: red;
+  }
+  .close-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    /* width: 20px;
+    height:100%; */
+    margin-left: 5px;
+    cursor: pointer;
+    :hover {
+      background-color: #ee5e5e;
+      .close {
+        color: white;
+      }
+    }
   }
 `;
 export default List;

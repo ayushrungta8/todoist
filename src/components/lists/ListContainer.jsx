@@ -51,6 +51,7 @@ const ListContainer = ({ selectedProjectId }) => {
           selectedProjectId={selectedProjectId}
           listId={eachItem.id}
           text={eachItem.text}
+          fetchLists={fetchData}
           onDelete={async () => deleteList(eachItem.id)}
         />
       ))}
@@ -60,7 +61,13 @@ const ListContainer = ({ selectedProjectId }) => {
           <button>
             <IoAddOutline className="add-icon" size="20" />
           </button>
-          <input type="text" name="AddList" placeholder="Add List" required />
+          <input
+            type="text"
+            name="AddList"
+            placeholder="Add List"
+            required
+            autofocus="true"
+          />
         </form>
       )}
     </Container>
@@ -74,7 +81,7 @@ const Container = styled.div`
 
   .add-list {
     margin: 0px;
-    margin-top: 10px;
+    margin-top: 15px;
     height: 30px;
     display: flex;
     align-items: center;

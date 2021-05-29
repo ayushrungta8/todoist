@@ -10,11 +10,13 @@ const Sidebar = ({
   selectedProjectId,
   setSelectedProjectId,
   onDelete,
+  fetchData,
 }) => {
   return (
     <SidebarContainer>
       {projectArray.map((eachItem) => (
         <SidebarCard
+          fetchData={fetchData}
           key={eachItem.id}
           icon={<IoApps size="15" className="sidebar-icon" />}
           text={eachItem.text}
@@ -35,6 +37,7 @@ const Sidebar = ({
           name="AddProject"
           placeholder="Add Project"
           required
+          autoFocus={false}
         />
       </form>
     </SidebarContainer>

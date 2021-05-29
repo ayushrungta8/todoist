@@ -54,6 +54,7 @@ function App() {
             selectedProjectId={selectedProjectId}
             setSelectedProjectId={setSelectedProjectId}
             onDelete={deleteProject}
+            fetchData={fetchData}
           />
         )}
         <ListContainer

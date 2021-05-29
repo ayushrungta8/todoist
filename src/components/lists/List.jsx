@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  IoAddOutline,
-  IoCloseOutline,
-  IoEllipsisHorizontalOutline,
-} from "react-icons/io5";
-import { FaLightbulb } from "react-icons/fa";
+import { IoAddOutline, IoCloseOutline } from "react-icons/io5";
+import { FaLightbulb, FaPencilAlt } from "react-icons/fa";
 import styled from "styled-components";
 import Task from "./Task";
 import db from "../../firebase";
 
-const List = ({ text, selectedProjectId, listId, onDelete }) => {
+const List = ({ text, selectedProjectId, listId, onDelete, fetchLists }) => {
   const [taskArray, setTaskArray] = useState([]);
   const deleteTask = async (taskId) => {
     await db.collection("tasks").doc(taskId).delete();
@@ -48,13 +44,34 @@ const List = ({ text, selectedProjectId, listId, onDelete }) => {
     fetchData(listId);
   }, [listId]);
 
+  const [updateTextBoxVisible, setupdateTextBoxVisible] = useState(false);
+  const updateList = async (e) => {
+    const data = new FormData(e.target);
+    const newText = data.get("editListName");
+    e.preventDefault();
+    await db.collection("lists").doc(listId).update({ text: newText });
+    setupdateTextBoxVisible(!updateTextBoxVisible);
+    fetchLists(selectedProjectId);
+  };
+
   return (
     <Container>
       <ListHeading>
         <h5>{text}</h5>
         <FaLightbulb className="categoryIcon" />
         <h6 className="counter">2</h6>
-        <IoEllipsisHorizontalOutline className="icon" />
+        <div
+          className="edit-container"
+          onClick={() => setupdateTextBoxVisible(!updateTextBoxVisible)}
+        >
+          <FaPencilAlt size="10" className="edit" />
+        </div>
+        {updateTextBoxVisible && (
+          <form onSubmit={updateList} className="updateTextBox">
+            <input type="text" name="editListName" autoFocus />
+          </form>
+        )}
+
         <div className="close-container" onClick={onDelete}>
           <IoCloseOutline size="10" className="close" />
         </div>
@@ -74,7 +91,13 @@ const List = ({ text, selectedProjectId, listId, onDelete }) => {
           <button>
             <IoAddOutline className="add-icon" size="20" />
           </button>
-          <input type="text" name="AddTask" placeholder="Add Task" required />
+          <input
+            type="text"
+            name="AddTask"
+            placeholder="Add Task"
+            required
+            autoFocus
+          />
         </form>
       </AddTask>
     </Container>
@@ -125,9 +148,57 @@ const Container = styled.div`
 `;
 
 const ListHeading = styled.div`
+  position: relative;
   padding: 5px;
   align-items: center;
   display: flex;
+  .edit {
+    color: transparent;
+  }
+  .close {
+    color: transparent;
+  }
+  .updateTextBox {
+    position: absolute;
+  }
+  :hover {
+    .close {
+      color: #dc4d3d;
+    }
+    .close-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px;
+      margin-left: 0;
+      cursor: pointer;
+
+      :hover {
+        background-color: #ee5e5e;
+        .close {
+          color: white;
+        }
+      }
+    }
+    .edit {
+      color: #dc4d3d;
+    }
+    .edit-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      margin-left: auto;
+      cursor: pointer;
+
+      :hover {
+        background-color: #ee5e5e;
+        .edit {
+          color: white;
+        }
+      }
+    }
+  }
   .counter {
     color: #9c9c9c;
     margin-left: 8px;
@@ -142,9 +213,7 @@ const ListHeading = styled.div`
     margin-left: 8px;
     color: orange;
   }
-  .close {
-    color: red;
-  }
+
   .close-container {
     display: flex;
     align-items: center;

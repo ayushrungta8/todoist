@@ -9,6 +9,14 @@ const ListContainer = ({ selectedProjectId }) => {
   const [listArray, setListArray] = useState([]);
   const deleteList = async (listId) => {
     await db.collection("lists").doc(listId).delete();
+    const tasks = await db
+      .collection("tasks")
+      .where("listId", "==", listId)
+      .get();
+
+    tasks.forEach((task) => {
+      db.collection("tasks").doc(task.id).delete();
+    });
     fetchData(selectedProjectId);
   };
   const addList = async (e) => {

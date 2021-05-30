@@ -11,7 +11,26 @@ function App() {
   const [selectedProjectId, setSelectedProjectId] = useState();
   const deleteProject = async (projectId) => {
     await db.collection("projects").doc(projectId).delete();
+    const lists = await db
+      .collection("lists")
+      .where("projectId", "==", projectId)
+      .get();
+
+    lists.forEach((list) => {
+      db.collection("lists").doc(list.id).delete();
+    });
+    const tasks = await db
+      .collection("tasks")
+      .where("projectId", "==", projectId)
+      .get();
+
+    tasks.forEach((task) => {
+      db.collection("tasks").doc(task.id).delete();
+    });
     await fetchData();
+    // console.log(projectArray);
+    // console.log(projectArray.length);
+    !(projectArray.length - 1) && window.location.reload();
   };
   const addProject = async (e) => {
     e.preventDefault();

@@ -1,11 +1,23 @@
 import React from "react";
 import { IoCloseOutline } from "react-icons/io5";
 import styled from "styled-components";
+import db from "../../firebase";
 
-const Task = ({ text, taskId, onDelete }) => {
+const Task = ({ text, taskId, onDelete, isChecked, fetchData, listId }) => {
+  const updateChecked = async (isChecked) => {
+    await db.collection("tasks").doc(taskId).update({
+      isChecked: isChecked,
+    });
+    fetchData(listId);
+  };
   return (
-    <Container>
-      <input type="checkbox" name="test145" />
+    <Container isChecked={isChecked}>
+      <input
+        type="checkbox"
+        name="test145"
+        checked={isChecked}
+        onChange={() => updateChecked(!isChecked)}
+      />
       <label>{text}</label>
       <div className="close-container" onClick={onDelete}>
         <IoCloseOutline size="10" className="close" />

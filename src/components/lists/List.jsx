@@ -11,7 +11,6 @@ const List = ({ text, selectedProjectId, listId, onDelete, fetchLists }) => {
     await db.collection("tasks").doc(taskId).delete();
     await fetchData(listId);
   };
-
   const addTask = (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -20,12 +19,14 @@ const List = ({ text, selectedProjectId, listId, onDelete, fetchLists }) => {
       createdAt: Date.now(),
       projectId: selectedProjectId,
       listId: listId,
+      isChecked: false,
     };
     const newDoc = db.collection("tasks").add(newData);
     newData.id = newDoc.id;
     const temp = [...taskArray, newData];
     setTaskArray(temp);
     e.target.reset();
+    fetchData(listId);
   };
   const fetchData = async (listId) => {
     let docs = await db
@@ -83,6 +84,9 @@ const List = ({ text, selectedProjectId, listId, onDelete, fetchLists }) => {
           text={eachItem.text}
           taskId={eachItem.id}
           onDelete={async () => await deleteTask(eachItem.id)}
+          isChecked={eachItem.isChecked}
+          fetchData={fetchData}
+          listId={listId}
         />
       ))}
 

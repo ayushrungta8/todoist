@@ -7,18 +7,8 @@ import List from "./List";
 
 const ListContainer = ({ selectedProjectId }) => {
   const [listArray, setListArray] = useState([]);
-  const deleteList = async (listId) => {
-    await db.collection("lists").doc(listId).delete();
-    const tasks = await db
-      .collection("tasks")
-      .where("listId", "==", listId)
-      .get();
 
-    tasks.forEach((task) => {
-      db.collection("tasks").doc(task.id).delete();
-    });
-    fetchData(selectedProjectId);
-  };
+  /*-------------Add List---------------*/
   const addList = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -33,6 +23,8 @@ const ListContainer = ({ selectedProjectId }) => {
     setListArray(temp);
     e.target.reset();
   };
+
+  /*-------------Get List---------------*/
   const fetchData = async (selectedProjectId) => {
     let docs = await db
       .collection("lists")
@@ -45,6 +37,22 @@ const ListContainer = ({ selectedProjectId }) => {
     });
     setListArray(temp);
   };
+
+  /*-------------Delete List---------------*/
+  const deleteList = async (listId) => {
+    await db.collection("lists").doc(listId).delete();
+    const tasks = await db
+      .collection("tasks")
+      .where("listId", "==", listId)
+      .get();
+
+    tasks.forEach((task) => {
+      db.collection("tasks").doc(task.id).delete();
+    });
+    fetchData(selectedProjectId);
+  };
+
+  /*-------------UseEffect Get Data---------------*/
   useEffect(() => {
     if (selectedProjectId) {
       fetchData(selectedProjectId);
@@ -86,7 +94,7 @@ const Container = styled.div`
   overflow: auto;
   white-space: nowrap;
   padding: 30px;
-
+  width: 100%;
   .add-list {
     margin: 0px;
     margin-top: 15px;

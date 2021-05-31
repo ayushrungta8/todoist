@@ -6,7 +6,6 @@ import SidebarCard from "./SidebarCard";
 const Sidebar = ({
   addProject,
   projectArray,
-  // setprojectArray,
   selectedProjectId,
   setSelectedProjectId,
   onDelete,
@@ -47,6 +46,7 @@ const SidebarContainer = styled.div`
   background-color: #f3efef;
   height: calc(100vh - 40px);
   width: 250px;
+  min-width: 250px;
   padding: 30px 10px 30px 30px;
   overflow-y: auto;
   .add-project {

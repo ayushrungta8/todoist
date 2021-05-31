@@ -6,11 +6,21 @@ import Task from "./Task";
 import db from "../../firebase";
 
 const List = ({ text, selectedProjectId, listId, onDelete, fetchLists }) => {
+  const [checkedLength, setCheckedLength] = useState(0);
   const [taskArray, setTaskArray] = useState([]);
-  const deleteTask = async (taskId) => {
-    await db.collection("tasks").doc(taskId).delete();
-    await fetchData(listId);
+  const [updateTextBoxVisible, setupdateTextBoxVisible] = useState(false);
+
+  /*-------------Update List---------------*/
+  const updateList = async (e) => {
+    const data = new FormData(e.target);
+    const newText = data.get("editListName");
+    e.preventDefault();
+    await db.collection("lists").doc(listId).update({ text: newText });
+    setupdateTextBoxVisible(!updateTextBoxVisible);
+    fetchLists(selectedProjectId);
   };
+
+  /*-------------Add Task---------------*/
   const addTask = (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -23,11 +33,11 @@ const List = ({ text, selectedProjectId, listId, onDelete, fetchLists }) => {
     };
     const newDoc = db.collection("tasks").add(newData);
     newData.id = newDoc.id;
-    const temp = [...taskArray, newData];
-    setTaskArray(temp);
     e.target.reset();
     fetchData(listId);
   };
+
+  /*-------------Get Task---------------*/
   const fetchData = async (listId) => {
     let docs = await db
       .collection("tasks")
@@ -39,28 +49,31 @@ const List = ({ text, selectedProjectId, listId, onDelete, fetchLists }) => {
     docs.forEach((record) => {
       temp.push({ ...record.data(), id: record.id });
     });
+
+    const checkedArray = temp.filter((each) => !each.isChecked);
+    setCheckedLength(checkedArray.length);
+    setTaskArray(temp);
+
     setTaskArray(temp);
   };
+
+  /*-------------Delete Task---------------*/
+  const deleteTask = async (taskId) => {
+    await db.collection("tasks").doc(taskId).delete();
+    await fetchData(listId);
+  };
+
+  /*-------------UseEffect Get Data---------------*/
   useEffect(() => {
     fetchData(listId);
   }, [listId]);
-
-  const [updateTextBoxVisible, setupdateTextBoxVisible] = useState(false);
-  const updateList = async (e) => {
-    const data = new FormData(e.target);
-    const newText = data.get("editListName");
-    e.preventDefault();
-    await db.collection("lists").doc(listId).update({ text: newText });
-    setupdateTextBoxVisible(!updateTextBoxVisible);
-    fetchLists(selectedProjectId);
-  };
 
   return (
     <Container>
       <ListHeading>
         <h5>{text}</h5>
         <FaLightbulb className="categoryIcon" />
-        <h6 className="counter">2</h6>
+        <h6 className="counter">{checkedLength}</h6>
         <div
           className="edit-container"
           onClick={() => setupdateTextBoxVisible(!updateTextBoxVisible)}
@@ -109,9 +122,7 @@ const List = ({ text, selectedProjectId, listId, onDelete, fetchLists }) => {
 };
 
 const AddTask = styled.div`
-  /* padding: 20px; */
   display: flex;
-  /* border: 1px solid red; */
 
   .add-task {
     margin: 0px;
@@ -125,7 +136,6 @@ const AddTask = styled.div`
 
     button {
       border: none;
-      /* border-right: 1px solid #b4b2b2; */
       background: none;
       margin: none;
       padding: 5px;
@@ -143,6 +153,7 @@ const AddTask = styled.div`
     }
   }
 `;
+
 const Container = styled.div`
   width: 250px;
   display: inline-block;
@@ -156,15 +167,6 @@ const ListHeading = styled.div`
   padding: 5px;
   align-items: center;
   display: flex;
-  .edit {
-    color: transparent;
-  }
-  .close {
-    color: transparent;
-  }
-  .updateTextBox {
-    position: absolute;
-  }
   :hover {
     .close {
       color: #dc4d3d;
@@ -176,7 +178,6 @@ const ListHeading = styled.div`
       padding: 3px;
       margin-left: 0;
       cursor: pointer;
-
       :hover {
         background-color: #ee5e5e;
         .close {
@@ -194,7 +195,6 @@ const ListHeading = styled.div`
       padding: 5px;
       margin-left: auto;
       cursor: pointer;
-
       :hover {
         background-color: #ee5e5e;
         .edit {
@@ -203,16 +203,31 @@ const ListHeading = styled.div`
       }
     }
   }
+
+  .edit {
+    color: transparent;
+  }
+
+  .close {
+    color: transparent;
+  }
+
+  .updateTextBox {
+    position: absolute;
+  }
+
   .counter {
     color: #9c9c9c;
     margin-left: 8px;
     font-size: 10px;
     font-weight: 500;
   }
+
   .icon {
     margin-left: auto;
     margin-right: 0;
   }
+
   .categoryIcon {
     margin-left: 8px;
     color: orange;
@@ -223,8 +238,6 @@ const ListHeading = styled.div`
     align-items: center;
     justify-content: center;
     padding: 5px;
-    /* width: 20px;
-    height:100%; */
     margin-left: 5px;
     cursor: pointer;
     :hover {

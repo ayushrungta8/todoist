@@ -82,7 +82,7 @@ const ListContainer = ({ selectedProjectId }) => {
             name="AddList"
             placeholder="Add List"
             required
-            autofocus="true"
+            autoFocus
           />
         </form>
       )}

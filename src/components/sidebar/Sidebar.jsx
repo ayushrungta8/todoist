@@ -43,7 +43,8 @@ const Sidebar = ({
   );
 };
 const SidebarContainer = styled.div`
-  background-color: #f3efef;
+  background-color: #313030;
+  color: white;
   height: calc(100vh - 40px);
   width: 250px;
   min-width: 250px;
@@ -55,7 +56,7 @@ const SidebarContainer = styled.div`
     margin-bottom: 15px;
     cursor: pointer;
     background-color: #e9e5e5;
-
+    color: black;
     button {
       border: none;
       border-right: 1px solid #b4b2b2;

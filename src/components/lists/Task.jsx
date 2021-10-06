@@ -13,10 +13,12 @@ const Task = ({ text, taskId, onDelete, isChecked, fetchData, listId }) => {
   };
 
   return (
-    <Container onClick={() => updateChecked(!isChecked)}>
+    <Container onClick={() => updateChecked(!isChecked)} draggable>
       {isChecked && <div class="overlay"></div>}
       <input type="checkbox" name="test145" checked={isChecked} />
-      <label>{text}</label>
+      <label style={{ textDecoration: isChecked ? "line-through" : "" }}>
+        {text}
+      </label>
       <div className="close-container" onClick={onDelete}>
         <IoCloseOutline size="10" className="close" />
       </div>
@@ -59,6 +61,7 @@ const Container = styled.div`
     opacity: 20%;
     width: 100%;
     height: 100%;
+    /* text-decoration: line-through; */
   }
 
   & label {

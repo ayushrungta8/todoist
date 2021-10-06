@@ -58,8 +58,7 @@ const Container = styled.div`
   margin-bottom: 15px;
   background-color: ${({ selectedProjectId }) =>
     !selectedProjectId ? "transparent" : "#c4c1c1"};
-  /* color: ${({ selectedProjectId }) =>
-    !selectedProjectId ? "black" : "white"}; */
+  color: ${({ selectedProjectId }) => (!selectedProjectId ? "white" : "black")};
 
   .updateTextBox {
     position: absolute;
@@ -135,6 +134,7 @@ const Container = styled.div`
   .card {
     width: 100%;
     display: flex;
+    align-items: center;
     cursor: pointer;
   }
 `;

@@ -163,6 +163,8 @@ const Container = styled.div`
 `;
 
 const ListHeading = styled.div`
+  word-break: break-all;
+  white-space: normal;
   position: relative;
   padding: 5px;
   align-items: center;
